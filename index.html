@@ -581,12 +581,7 @@ async function saveImage() {
 }
 
 function postToX() {
-  const tags = lastKw.map(k => `#${k}`).join(' ');
-  const tweetText = `【虚報新聞🗞️】${currentHeadline}\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
-  const siteUrl = window.location.href.includes('vercel') || window.location.href.includes('http')
-    ? window.location.origin
-    : '';
-  const params = new URLSearchParams({ text: tweetText });
+  const params = new URLSearchParams({ text: buildShareText() });
   window.open(`https://twitter.com/intent/tweet?${params.toString()}`, '_blank');
 }
 
