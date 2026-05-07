@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>エイプリルフーラ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Reggae+One&family=Kaisei+Tokumin:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFE600;
+  --red: #FF2D2D;
+  --blue: #0057FF;
+  --green: #00C853;
+  --orange: #FF6B00;
+  --ink: #111;
+  --paper: #FFFDE7;
+  --pink: #FF4081;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--yellow);
+  background-image:
+    radial-gradient(circle at 10% 20%, #FF2D2D22 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, #0057FF22 0%, transparent 40%),
+    repeating-linear-gradient(45deg, transparent, transparent 18px, rgba(0,0,0,0.03) 18px, rgba(0,0,0,0.03) 19px);
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+  font-family: 'Noto Serif JP', serif;
+}
+
+.wrapper { max-width: 680px; margin: 0 auto; }
+
+.site-header {
+  text-align: center;
+  margin-bottom: 22px;
+  position: relative;
+}
+
+.site-title {
+  font-family: 'Reggae One', cursive;
+  font-size: clamp(36px, 9vw, 64px);
+  color: var(--ink);
+  line-height: 1;
+  display: inline-block;
+  transform: rotate(-1.5deg);
+  text-shadow: 4px 4px 0 var(--red), 7px 7px 0 #0057FF55;
+  position: relative;
+}
+
+.site-title::after {
+  content: "🃏";
+  position: absolute;
+  right: -42px;
+  top: -8px;
+  font-size: 30px;
+  animation: wobble 2s ease-in-out infinite;
+}
+
+@keyframes wobble {
+  0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(8deg)}
+}
+
+.site-subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--ink);
+  opacity: 0.6;
+  margin-top: 6px;
+  transform: rotate(0.5deg);
+  display: block;
+}
+
+/* INPUT CARD */
+.input-card-label {
+  display: block;
+  text-align: center;
+  background: var(--red);
+  color: #fff;
+  font-family: 'Reggae One', cursive;
+  font-size: 13px;
+  padding: 6px 0;
+  border: 3px solid var(--ink);
+  border-bottom: none;
+  letter-spacing: 1px;
+}
+
+.input-card {
+  background: #fff;
+  border: 3px solid var(--ink);
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  box-shadow: 5px 5px 0 var(--blue), 8px 8px 0 var(--ink);
+}
+
+.keywords-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.kw-wrap { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.kw-label { font-size: 10px; font-weight: 900; letter-spacing: 0.5px; color: var(--blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+.kw-wrap:nth-child(1) input {
+  transform: rotate(-0.8deg) skew(-0.5deg);
+  border-radius: 0 4px 0 6px;
+  border-color: var(--red);
+}
+.kw-wrap:nth-child(2) input {
+  transform: rotate(0.4deg);
+  border-radius: 4px 0 5px 0;
+  border-color: var(--blue);
+}
+.kw-wrap:nth-child(3) input {
+  transform: rotate(-0.3deg) skew(0.3deg);
+  border-radius: 0 0 4px 0;
+  border-color: var(--green);
+}
+
+.kw-wrap input {
+  padding: 10px 8px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  border: 2.5px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  transition: all 0.15s;
+  width: 100%;
+  min-width: 0;
+}
+
+.kw-wrap input:focus {
+  background: #fff;
+  box-shadow: 3px 3px 0 var(--yellow);
+  transform: rotate(0deg) skew(0deg) scale(1.02);
+}
+
+.kw-wrap input::placeholder { color: #bbb; font-size: 12px; }
+
+.gen-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--red);
+  color: #fff;
+  font-family: 'Reggae One', cursive;
+  font-size: 20px;
+  letter-spacing: 2px;
+  border: 3px solid var(--ink);
+  cursor: pointer;
+  transform: rotate(-0.3deg);
+  clip-path: polygon(0 0,99% 1%,100% 100%,1% 99%);
+  transition: all 0.15s;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.gen-btn:hover { background: var(--orange); transform: rotate(0deg) scale(1.02); box-shadow: 6px 6px 0 var(--ink); }
+.gen-btn:active { transform: rotate(0.3deg) scale(0.98); box-shadow: 1px 1px 0 var(--ink); }
+.gen-btn:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+/* LOADING */
+.loading { display:none; text-align:center; padding:30px; background:#fff; border:3px dashed var(--blue); margin-bottom:20px; }
+.loading.show { display:block; }
+.loading-text { font-family:'Reggae One',cursive; font-size:18px; animation:colorshift .8s infinite; }
+@keyframes colorshift { 0%{color:var(--red)} 33%{color:var(--blue)} 66%{color:var(--green)} 100%{color:var(--red)} }
+.dots { font-size:24px; letter-spacing:4px; }
+.dot { animation:blink 1s infinite; }
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+/* NEWSPAPER */
+.newspaper { display:none; animation:stamp .4s cubic-bezier(.17,.67,.34,1.3); }
+.newspaper.visible { display:block; }
+@keyframes stamp { from{opacity:0;transform:scale(.85) rotate(-2deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+
+.np-inner {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+  clip-path: polygon(0.3% 0%,100% 0.2%,99.8% 100%,0% 99.7%);
+}
+
+.breaking-ribbon {
+  background: var(--red);
+  color: #fff;
+  font-family: 'Reggae One', cursive;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 6px;
+  animation: ribbonpulse 1.5s ease-in-out infinite;
+}
+@keyframes ribbonpulse { 0%,100%{opacity:1} 50%{opacity:.8} }
+
+.np-header {
+  border-bottom: 4px double var(--ink);
+  padding: 14px 18px 10px;
+  text-align: center;
+  background: linear-gradient(180deg,#fff8e1 0%,var(--paper) 100%);
+}
+
+.np-name {
+  font-family: 'Kaisei Tokumin', serif;
+  font-size: clamp(32px,9vw,52px);
+  font-weight: 800;
+  letter-spacing: 6px;
+  line-height: 1;
+  color: var(--ink);
+  text-shadow: 2px 2px 0 rgba(255,46,46,.3);
+}
+
+.np-edition { font-size:10px; letter-spacing:2px; color:#888; margin-top:4px; }
+
+.np-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #555;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--ink);
+}
+
+.np-body { padding: 18px 18px 14px; }
+
+.np-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Reggae One', cursive;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 3px 12px;
+  margin-bottom: 10px;
+  transform: rotate(-0.5deg);
+  border: 2px solid var(--ink);
+}
+
+.np-headline {
+  font-family: 'Kaisei Tokumin', serif;
+  font-size: clamp(18px,5vw,26px);
+  font-weight: 800;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.np-sub-headline { font-size:13px; color:#444; margin-bottom:14px; line-height:1.6; font-style:italic; }
+
+.np-columns {
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr;
+  gap: 14px;
+}
+
+.np-divider { background: var(--ink); }
+
+.np-col { font-size:13px; line-height:2; color:var(--ink); text-align:justify; }
+.np-col p + p { margin-top:10px; }
+
+.np-quote {
+  margin-top:14px;
+  border:2px solid var(--orange);
+  padding:10px 14px;
+  background:rgba(255,107,0,.07);
+  font-size:13px;
+  line-height:1.7;
+  color:var(--orange);
+  font-style:italic;
+  transform:rotate(.3deg);
+}
+.np-quote::before { content:"💬 "; font-style:normal; }
+
+.kw-tags {
+  display:flex; gap:6px; flex-wrap:wrap;
+  padding:10px 18px;
+  border-top:1px dashed #aaa;
+}
+.kw-tag {
+  background:var(--yellow);
+  border:2px solid var(--ink);
+  font-size:11px; font-weight:700;
+  padding:2px 10px; letter-spacing:1px;
+  transform:rotate(-.5deg);
+}
+.kw-tag:nth-child(2){transform:rotate(.8deg);background:#d0f0ff}
+.kw-tag:nth-child(3){transform:rotate(-.3deg);background:#ffe0e0}
+
+.action-row {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  padding:14px 18px;
+  border-top:2px solid var(--ink);
+  background:#fff8e1;
+}
+
+.action-btn {
+  padding:10px 6px;
+  font-family:'Noto Serif JP',serif;
+  font-size:12px; font-weight:700;
+  border:2.5px solid var(--ink);
+  cursor:pointer;
+  transition:all .15s;
+  letter-spacing:.5px;
+}
+
+.btn-x { background:#000; color:#fff; }
+.btn-x:hover { background:#222; transform:rotate(-.5deg) scale(1.03); }
+.btn-copy { background:var(--yellow); color:var(--ink); }
+.btn-copy:hover { background:var(--orange); color:#fff; transform:rotate(.5deg); }
+.btn-re { background:var(--green); color:#fff; }
+.btn-re:hover { background:#00a844; transform:rotate(-.3deg) scale(1.03); }
+
+.np-footer {
+  border-top:3px double var(--ink);
+  padding:8px 18px;
+  text-align:center;
+  font-size:10px; color:#888; letter-spacing:1px;
+  background:#fff;
+}
+.np-footer span { color:var(--red); font-weight:700; }
+
+.confetti-wrap {
+  position:fixed; top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none; z-index:999; overflow:hidden;
+}
+.c-piece {
+  position:absolute; width:10px; height:10px; top:-20px;
+  animation:fall linear forwards;
+}
+@keyframes fall { to{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+.toast {
+  position:fixed; bottom:30px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--ink); color:#fff;
+  font-family:'Reggae One',cursive; font-size:15px;
+  padding:12px 28px; border:3px solid var(--yellow);
+  transition:transform .3s ease; z-index:1000;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+@media (max-width:480px) {
+  .keywords-row { grid-template-columns:1fr; }
+  .np-columns { grid-template-columns:1fr; }
+  .np-divider { display:none; }
+  .action-row { grid-template-columns:1fr 1fr; }
+  .btn-re { grid-column:span 2; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="site-header">
+    <div class="site-title">エイプリルフーラ</div>
+    <span class="site-subtitle">── AIが全力で嘘をつく、3キーワード・フェイクニュース生成機 ──</span>
+  </div>
+
+  <div class="input-card-label">⚡ キーワードを3つ入力 ⚡</div>
+  <div class="input-card">
+    <div class="keywords-row">
+      <div class="kw-wrap">
+        <span class="kw-label">🔑 キーワード①</span>
+        <input type="text" id="kw1" placeholder="例：デニム" maxlength="20">
+      </div>
+      <div class="kw-wrap">
+        <span class="kw-label">🔑 キーワード②</span>
+        <input type="text" id="kw2" placeholder="例：釣り竿" maxlength="20">
+      </div>
+      <div class="kw-wrap">
+        <span class="kw-label">🔑 キーワード③</span>
+        <input type="text" id="kw3" placeholder="例：豆腐" maxlength="20">
+      </div>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generateNews()">
+      🗞️ フェイクニュースをでっちあげる！
+    </button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-text">嘘をこしらえています…</div>
+    <div class="dots">
+      <span class="dot">●</span><span class="dot">●</span><span class="dot">●</span>
+    </div>
+  </div>
+
+  <div class="newspaper" id="newspaper">
+    <div class="np-inner">
+      <div class="breaking-ribbon">🚨 BREAKING NEWS · 速 報 · BREAKING NEWS 🚨</div>
+      <div class="np-header">
+        <div class="np-name">虚 報 新 聞</div>
+        <div class="np-edition">KYOHO SHIMBUN · 全国版 · 信頼係数ゼロ保証</div>
+        <div class="np-meta">
+          <span id="np-date"></span>
+          <span>第一面／特報</span>
+          <span>本紙は架空です</span>
+        </div>
+      </div>
+      <div class="np-body">
+        <div class="np-category">🔥 衝撃スクープ</div>
+        <h2 class="np-headline" id="np-headline">　</h2>
+        <p class="np-sub-headline" id="np-subheadline">　</p>
+        <div class="np-columns">
+          <div class="np-col" id="np-col1"></div>
+          <div class="np-divider"></div>
+          <div class="np-col" id="np-col2"></div>
+        </div>
+        <div class="np-quote" id="np-quote"></div>
+      </div>
+      <div class="kw-tags" id="kw-tags"></div>
+      <div class="action-row">
+        <button class="action-btn btn-x" onclick="postToX()">𝕏 Xに投稿</button>
+        <button class="action-btn btn-copy" onclick="copyText()">📋 コピー</button>
+        <button class="action-btn btn-re" onclick="regenerate()">🔄 別バージョン</button>
+      </div>
+      <div class="np-footer">
+        <span>⚠ これはジョークです。実在の人物・団体とは無関係です。</span><br>
+        フェイクニュースは笑いのためだけに存在する
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="confetti-wrap" id="confetti"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let lastKw = [];
+let currentHeadline = '';
+let currentShortBody = '';
+
+const COLORS = ['#FF2D2D','#FFE600','#0057FF','#00C853','#FF6B00','#FF4081'];
+
+function getDate() {
+  const d = new Date();
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 朝刊`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function launchConfetti() {
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'c-piece';
+    el.style.cssText = `left:${Math.random()*100}%;background:${COLORS[Math.floor(Math.random()*COLORS.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'0'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;`;
+    wrap.appendChild(el);
+  }
+  setTimeout(() => { wrap.innerHTML = ''; }, 4000);
+}
+
+async function generateNews() {
+  const kw1 = document.getElementById('kw1').value.trim();
+  const kw2 = document.getElementById('kw2').value.trim();
+  const kw3 = document.getElementById('kw3').value.trim();
+  if (!kw1 || !kw2 || !kw3) { showToast('⚠️ 3つ全部入力してね！'); return; }
+  lastKw = [kw1, kw2, kw3];
+  await fetchNews(kw1, kw2, kw3);
+}
+
+async function regenerate() {
+  if (lastKw.length < 3) return;
+  await fetchNews(...lastKw);
+}
+
+async function fetchNews(kw1, kw2, kw3) {
+  const btn = document.getElementById('genBtn');
+  const loading = document.getElementById('loading');
+  const newspaper = document.getElementById('newspaper');
+
+  btn.disabled = true;
+  loading.classList.add('show');
+  newspaper.classList.remove('visible');
+
+  const prompt = `あなたはエイプリルフール専門の天才ジョーク記事ライターです。
+以下の3キーワードを全部使い、荒唐無稽・ぶっ飛んだ発想・でも悪意のないフェイクニュースを書いてください。
+
+AIならではの突拍子もない発想を全開にしてください。例：
+- 現実にはありえない組み合わせの因果関係
+- 謎の学術機関や架空の研究結果
+- 奇妙な数字・パーセンテージ（「137.4%増」「4.2秒に1回」など）
+- 意外なオチや逆転
+- なぜかその3つが繋がってしまう理屈
+
+キーワード: 「${kw1}」「${kw2}」「${kw3}」
+
+以下のJSONのみで返答（バッククォートや前置き不要）:
+{
+  "headline": "大見出し（20〜35字、衝撃的でぶっ飛んだ内容）",
+  "subheadline": "小見出し（35〜55字、具体的な数字や状況）",
+  "col1_p1": "本文段落1（70〜100字）",
+  "col1_p2": "本文段落2（70〜100字）",
+  "col2_p1": "本文段落3（70〜100字）",
+  "col2_p2": "本文段落4（70〜100字、笑えるオチで締める）",
+  "quote": "架空の専門家コメント（45〜65字）と発言者名（架空の肩書き付き）"
+}`;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1200,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    const text = data.content.map(i => i.text || "").join("");
+    const clean = text.replace(/```json|```/g, "").trim();
+    const news = JSON.parse(clean);
+
+    currentHeadline = news.headline;
+    currentShortBody = news.col1_p1 + news.col1_p2;
+
+    document.getElementById('np-date').textContent = getDate();
+    document.getElementById('np-headline').textContent = news.headline;
+    document.getElementById('np-subheadline').textContent = news.subheadline;
+    document.getElementById('np-col1').innerHTML = `<p>${news.col1_p1}</p><p>${news.col1_p2}</p>`;
+    document.getElementById('np-col2').innerHTML = `<p>${news.col2_p1}</p><p>${news.col2_p2}</p>`;
+    document.getElementById('np-quote').textContent = `「${news.quote}」`;
+    document.getElementById('kw-tags').innerHTML =
+      [kw1,kw2,kw3].map(k=>`<span class="kw-tag">#${k}</span>`).join('');
+
+    newspaper.classList.add('visible');
+    launchConfetti();
+    setTimeout(() => newspaper.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+
+  } catch(e) {
+    showToast('😱 失敗しました…もう一度！');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('show');
+  }
+}
+
+function buildShareText() {
+  const tags = lastKw.map(k => `#${k}`).join(' ');
+  const body = currentShortBody.slice(0, 90);
+  return `【虚報新聞 速報🗞️】\n${currentHeadline}\n\n${body}…\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
+}
+
+function postToX() {
+  const tags = lastKw.map(k => `#${k}`).join(' ');
+  const tweetText = `【虚報新聞🗞️】${currentHeadline}\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
+  const siteUrl = window.location.href.includes('vercel') || window.location.href.includes('http')
+    ? window.location.origin
+    : '';
+  const params = new URLSearchParams({ text: tweetText });
+  window.open(`https://twitter.com/intent/tweet?${params.toString()}`, '_blank');
+}
+
+function copyText() {
+  navigator.clipboard.writeText(buildShareText())
+    .then(() => showToast('📋 コピーしました！Xに貼り付けてね'))
+    .catch(() => showToast('コピーに失敗しました'));
+}
+</script>
+</body>
+</html>
