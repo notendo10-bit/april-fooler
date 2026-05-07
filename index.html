@@ -554,8 +554,7 @@ AIならではの突拍子もない発想を全開にしてください。例：
 
 function buildShareText() {
   const tags = lastKw.map(k => `#${k}`).join(' ');
-  const body = currentShortBody.slice(0, 90);
-  return `【虚報新聞 速報🗞️】\n${currentHeadline}\n\n${body}…\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
+  return `【虚報新聞 速報🗞️】\n${currentHeadline}\n\nhttps://april-fooler-ehlf.vercel.app\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
 }
 
 function postToX() {
