@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>エイプリルフーラ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Reggae+One&family=Kaisei+Tokumin:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
   --yellow: #FFE600;
@@ -298,7 +299,7 @@ body {
 
 .action-row {
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr 1fr;
   gap:8px;
   padding:14px 18px;
   border-top:2px solid var(--ink);
@@ -319,6 +320,8 @@ body {
 .btn-x:hover { background:#222; transform:rotate(-.5deg) scale(1.03); }
 .btn-copy { background:var(--yellow); color:var(--ink); }
 .btn-copy:hover { background:var(--orange); color:#fff; transform:rotate(.5deg); }
+.btn-img { background:var(--pink); color:#fff; }
+.btn-img:hover { background:#e91e63; transform:rotate(.4deg) scale(1.03); }
 .btn-re { background:var(--green); color:#fff; }
 .btn-re:hover { background:#00a844; transform:rotate(-.3deg) scale(1.03); }
 
@@ -357,7 +360,6 @@ body {
   .np-columns { grid-template-columns:1fr; }
   .np-divider { display:none; }
   .action-row { grid-template-columns:1fr 1fr; }
-  .btn-re { grid-column:span 2; }
 }
 </style>
 </head>
@@ -398,7 +400,7 @@ body {
   </div>
 
   <div class="newspaper" id="newspaper">
-    <div class="np-inner">
+    <div class="np-inner" id="np-inner-wrap">
       <div class="breaking-ribbon">🚨 BREAKING NEWS · 速 報 · BREAKING NEWS 🚨</div>
       <div class="np-header">
         <div class="np-name">虚 報 新 聞</div>
@@ -423,6 +425,7 @@ body {
       <div class="kw-tags" id="kw-tags"></div>
       <div class="action-row">
         <button class="action-btn btn-x" onclick="postToX()">𝕏 Xに投稿</button>
+        <button class="action-btn btn-img" onclick="saveImage()">🖼️ 画像保存</button>
         <button class="action-btn btn-copy" onclick="copyText()">📋 コピー</button>
         <button class="action-btn btn-re" onclick="regenerate()">🔄 別バージョン</button>
       </div>
@@ -557,8 +560,33 @@ function buildShareText() {
   return `【虚報新聞 速報🗞️】\n${currentHeadline}\n\nhttps://april-fooler-ehlf.vercel.app\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
 }
 
+async function saveImage() {
+  const el = document.getElementById('np-inner-wrap');
+  showToast('📸 画像を生成中…');
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#FFFDE7'
+    });
+    const link = document.createElement('a');
+    link.download = 'kyoho-shimbun.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ 保存しました！Xに画像で投稿してね');
+  } catch(e) {
+    showToast('😱 画像生成に失敗しました');
+    console.error(e);
+  }
+}
+
 function postToX() {
-  const params = new URLSearchParams({ text: buildShareText() });
+  const tags = lastKw.map(k => `#${k}`).join(' ');
+  const tweetText = `【虚報新聞🗞️】${currentHeadline}\n\n${tags} #エイプリルフーラ #フェイクニュース\n※これはジョークです🃏`;
+  const siteUrl = window.location.href.includes('vercel') || window.location.href.includes('http')
+    ? window.location.origin
+    : '';
+  const params = new URLSearchParams({ text: tweetText });
   window.open(`https://twitter.com/intent/tweet?${params.toString()}`, '_blank');
 }
 
